@@ -58,78 +58,33 @@ app.get('/api/questions/:id/hint', async (req, res) => {
   }
 });
 
-// 3. Authentification Google (vérification du token côté serveur)
-app.post('/api/auth/google', async (req, res) => {
-  const { credential } = req.body;
-  if (!credential) return res.status(400).json({ error: "Token Google manquant" });
-
-  try {
-    // Décoder le JWT Google (sans vérif cryptographique pour la démo)
-    // En production : utiliser la librairie google-auth-library
-    const base64Url = credential.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const payload = JSON.parse(Buffer.from(base64, 'base64').toString('utf-8'));
-
-    const { sub: googleId, name, email, picture } = payload;
-
-    // Upsert dans la table users (si elle existe)
-    try {
-      await pool.query(`
-        INSERT INTO users (google_id, name, email, picture, total_score)
-        VALUES ($1, $2, $3, $4, 0)
-        ON CONFLICT (google_id) DO UPDATE SET name=$2, email=$3, picture=$4
-      `, [googleId, name, email, picture]);
-    } catch {
-      // Table users peut ne pas exister encore — on ignore
-    }
-
-    res.json({ success: true, user: { googleId, name, email, picture } });
-  } catch (err) {
-    console.error('Erreur auth Google:', err.message);
-    res.status(500).json({ error: "Erreur vérification token Google" });
-  }
-});
-
-// 4. Mise à jour du score (par ID interne)
-app.post('/api/update-score', async (req, res) => {
-  const { userId, points } = req.body;
-  try {
-    await pool.query(
-      'UPDATE users SET total_score = total_score + $1 WHERE id = $2',
-      [points, userId]
-    );
-    res.json({ message: "Score mis à jour" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// 5. Sauvegarde du score en fin de partie (par google_id)
+// 3. Sauvegarde du score en fin de partie (Simple Pseudo)
 app.post('/api/save-score', async (req, res) => {
-  const { googleId, score } = req.body;
-  if (!googleId) return res.status(400).json({ error: "googleId manquant" });
+  const { playerName, score } = req.body;
+  if (!playerName) return res.status(400).json({ error: "Nom du joueur manquant" });
+  
   try {
+    // On insère simplement une nouvelle ligne pour le classement
     await pool.query(
-      `UPDATE users SET total_score = GREATEST(total_score, $1) WHERE google_id = $2`,
-      [score, googleId]
+      `INSERT INTO users (name, total_score) VALUES ($1, $2)`,
+      [playerName, score]
     );
     res.json({ message: "Score sauvegardé" });
   } catch (err) {
     console.error('Erreur save-score:', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "Erreur lors de la sauvegarde" });
   }
 });
 
-
-// 5. Leaderboard
+// 4. Leaderboard
 app.get('/api/leaderboard', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT name, picture, total_score FROM users ORDER BY total_score DESC LIMIT 10'
+      'SELECT name, total_score FROM users ORDER BY total_score DESC LIMIT 10'
     );
     res.json(result.rows);
   } catch {
-    res.json([]); // Silencieux si table n'existe pas
+    res.json([]);
   }
 });
 

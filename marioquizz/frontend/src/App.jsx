@@ -1,13 +1,7 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import axios from 'axios';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import marioImg from './assets/mario.jpg';
 import villainGif from './assets/villain.gif';
 import doorImg from './assets/door.png';
 import './App.css';
-
-// ⚠️ Remplace par ton Client ID Google OAuth
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
 
 const TOTAL_LIVES = 3;
 const QUESTION_TIME = 30; // secondes par question
@@ -40,7 +34,7 @@ function TimerBar({ timeLeft, total }) {
 /* ─────────────────────────────────────────────
    ÉCRAN D'ACCUEIL
 ───────────────────────────────────────────── */
-function StartScreen({ onStart, user, onLogin, onLogout }) {
+function StartScreen({ onStart, playerName, setPlayerName }) {
   return (
     <div className="screen start-screen">
       <div className="start-glow-ring" />
@@ -52,33 +46,19 @@ function StartScreen({ onStart, user, onLogin, onLogout }) {
         </div>
         <p className="start-subtitle">Réponds avant que le BOSS ne rattrape Mario !</p>
 
-        {/* Auth Google */}
+        {/* Pseudo du joueur */}
         <div className="auth-section">
-          {user ? (
-            <div className="user-badge">
-              {user.picture && <img src={user.picture} alt="avatar" className="user-avatar" />}
-              <div className="user-info">
-                <span className="user-name">👋 {user.name}</span>
-                <button className="logout-btn" onClick={onLogout}>Déconnexion</button>
-              </div>
-            </div>
-          ) : (
-            <div className="google-login-wrap">
-              <p className="login-hint">Connecte-toi pour sauvegarder ton score !</p>
-              <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-                <GoogleLogin
-                  onSuccess={onLogin}
-                  onError={() => console.log('Échec de la connexion Google')}
-                  useOneTap
-                  theme="filled_black"
-                  shape="rectangular"
-                  size="large"
-                  text="signin_with"
-                  locale="fr"
-                />
-              </GoogleOAuthProvider>
-            </div>
-          )}
+          <div className="pseudo-input-wrap">
+            <label htmlFor="pseudo">TON PSEUDO POUR LE CLASSEMENT :</label>
+            <input 
+              type="text" 
+              id="pseudo"
+              placeholder="Ex: MarioMaster99" 
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              className="pseudo-input"
+            />
+          </div>
         </div>
 
         <div className="start-characters">
@@ -112,12 +92,12 @@ function StartScreen({ onStart, user, onLogin, onLogout }) {
 /* ─────────────────────────────────────────────
    ÉCRAN DE FIN
 ───────────────────────────────────────────── */
-function GameOverScreen({ score, won, onRestart, user }) {
+function GameOverScreen({ score, won, onRestart, playerName }) {
   useEffect(() => {
-    // Sauvegarde automatique du score si connecté avec Google
-    if (user?.googleId) {
+    // Sauvegarde automatique du score avec le pseudo
+    if (playerName) {
       axios.post('https://48h-plateforme.vercel.app/api/save-score', {
-        googleId: user.googleId,
+        playerName,
         score,
       }).catch(() => { /* silencieux si backend indisponible */ });
     }
@@ -146,7 +126,7 @@ function GameOverScreen({ score, won, onRestart, user }) {
           <div className="final-score-stars">
             {score >= 800 ? '⭐⭐⭐' : score >= 400 ? '⭐⭐' : '⭐'}
           </div>
-          {user && <p className="score-user">Joué en tant que {user.name}</p>}
+          {playerName && <p className="score-user">Bravo {playerName} !</p>}
         </div>
         <button className="cta-btn" onClick={onRestart}>🔄 REJOUER</button>
       </div>
@@ -157,7 +137,7 @@ function GameOverScreen({ score, won, onRestart, user }) {
 /* ─────────────────────────────────────────────
    ÉCRAN DE JEU (PRINCIPAL)
 ───────────────────────────────────────────── */
-function GameScreen({ questions, user }) {
+function GameScreen({ questions, playerName }) {
   const totalQ = questions.length;
   const marioStep = 75 / totalQ;
 
@@ -341,7 +321,7 @@ function GameScreen({ questions, user }) {
               </span>
             ))}
           </div>
-          {user && <span className="hud-user">👤 {user.name.split(' ')[0]}</span>}
+          {playerName && <span className="hud-user">👤 {playerName}</span>}
         </div>
       </div>
 
@@ -486,7 +466,7 @@ function App() {
   const [gameState, setGameState] = useState('START');
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+  const [playerName, setPlayerName] = useState('');
 
   useEffect(() => {
     // Remplacé par ton nouveau lien Vercel PROD
@@ -505,29 +485,6 @@ function App() {
       });
   }, []);
 
-  const handleGoogleLogin = async (credentialResponse) => {
-    try {
-      const BACKEND_URL = 'https://48h-plateforme.vercel.app';
-      // Décoder le JWT Google (payload base64)
-      const base64Url = credentialResponse.credential.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const payload = JSON.parse(window.atob(base64));
-      setUser({
-        googleId: payload.sub,
-        name: payload.name,
-        email: payload.email,
-        picture: payload.picture
-      });
-      
-      // Envoyer au backend
-      await axios.post(`${BACKEND_URL}/api/auth/google`, {
-        credential: credentialResponse.credential
-      }).catch(() => { /* backend optionnel */ });
-    } catch (e) {
-      console.error('Erreur décodage token Google', e);
-    }
-  };
-
   if (loading) {
     return (
       <div className="screen loading-screen">
@@ -539,18 +496,21 @@ function App() {
 
   if (gameState === 'START') {
     return (
-      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        <StartScreen
-          onStart={() => setGameState('PLAYING')}
-          user={user}
-          onLogin={handleGoogleLogin}
-          onLogout={() => setUser(null)}
-        />
-      </GoogleOAuthProvider>
+      <StartScreen
+        onStart={() => {
+          if (!playerName.trim()) {
+            alert('Entre un pseudo pour commencer !');
+            return;
+          }
+          setGameState('PLAYING');
+        }}
+        playerName={playerName}
+        setPlayerName={setPlayerName}
+      />
     );
   }
 
-  if (gameState === 'PLAYING') return <GameScreen questions={questions} user={user} />;
+  if (gameState === 'PLAYING') return <GameScreen questions={questions} playerName={playerName} />;
   return null;
 }
 
