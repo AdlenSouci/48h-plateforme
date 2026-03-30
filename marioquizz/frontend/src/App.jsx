@@ -116,7 +116,7 @@ function GameOverScreen({ score, won, onRestart, user }) {
   useEffect(() => {
     // Sauvegarde automatique du score si connecté avec Google
     if (user?.googleId) {
-      axios.post('https://48h-plateforme-h0n2nsxhu-soucis-projects.vercel.app/api/save-score', {
+      axios.post('https://48h-plateforme.vercel.app/api/save-score', {
         googleId: user.googleId,
         score,
       }).catch(() => { /* silencieux si backend indisponible */ });
@@ -489,15 +489,17 @@ function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    axios.get('https://48h-plateforme-h0n2nsxhu-soucis-projects.vercel.app/api/questions')
+    // Remplacé par ton nouveau lien Vercel PROD
+    const BACKEND_URL = 'https://48h-plateforme.vercel.app';
+
+    axios.get(`${BACKEND_URL}/api/questions`)
       .then(res => { setQuestions(res.data); setLoading(false); })
       .catch(() => {
+        // Fallback si le serveur ne répond pas encore (vérifie DATABASE_URL sur Vercel)
         setQuestions([
-          { id:1, content:'Quelle est la capitale de la France ?', option_a:'Berlin', option_b:'Madrid', option_c:'Paris', option_d:'Rome', solution:'Paris', hint:'C\'est la ville de la Tour Eiffel.', explanation:'Paris est la capitale et plus grande ville de France.' },
-          { id:2, content:'Combien font 2 + 2 × 2 ?', option_a:'8', option_b:'6', option_c:'4', option_d:'16', solution:'6', hint:'Priorité : multiplication avant addition.', explanation:'2 + (2×2) = 2 + 4 = 6' },
-          { id:3, content:'Quel langage stylise les pages web ?', option_a:'HTML', option_b:'Python', option_c:'CSS', option_d:'Java', solution:'CSS', hint:'Il gère couleurs, mise en page et polices.', explanation:'CSS = Cascading Style Sheets.' },
-          { id:4, content:'Qui a peint la Joconde ?', option_a:'Van Gogh', option_b:'Picasso', option_c:'Michel-Ange', option_d:'Léonard de Vinci', solution:'Léonard de Vinci', hint:'Génie de la Renaissance, aussi inventeur.', explanation:'Léonard de Vinci l\'a peinte au début du XVIe siècle.' },
-          { id:5, content:'Quelle planète est la plus proche du soleil ?', option_a:'Venus', option_b:'Terre', option_c:'Mars', option_d:'Mercure', solution:'Mercure', hint:'Pas la plus chaude, mais bien la plus proche.', explanation:'Mercure est la 1ère planète du système solaire.' },
+          { id:1, content:'⚠️ Erreur de connexion au serveur !', option_a:'Vérifie DATABASE_URL sur Vercel', option_b:'Redéploie le backend', option_c:'Check tes logs Vercel', option_d:'Relance le push git', solution:'Check tes logs Vercel', hint:'Le site n\'arrive pas à parler au serveur.', explanation:'Si tu vois ça, c\'est que l\'API n\'a pas répondu.' },
+          { id:2, content:'Quelle est la capitale de la France ?', option_a:'Berlin', option_b:'Madrid', option_c:'Paris', option_d:'Rome', solution:'Paris', hint:'C\'est la ville de la Tour Eiffel.', explanation:'Paris est la capitale et plus grande ville de France.' },
+          { id:3, content:'Combien font 2 + 2 × 2 ?', option_a:'8', option_b:'6', option_c:'4', option_d:'16', solution:'6', hint:'Priorité : multiplication avant addition.', explanation:'2 + (2×2) = 2 + 4 = 6' },
         ]);
         setLoading(false);
       });
@@ -505,6 +507,7 @@ function App() {
 
   const handleGoogleLogin = async (credentialResponse) => {
     try {
+      const BACKEND_URL = 'https://48h-plateforme.vercel.app';
       // Décoder le JWT Google (payload base64)
       const base64Url = credentialResponse.credential.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -517,7 +520,7 @@ function App() {
       });
       
       // Envoyer au backend
-      await axios.post('https://48h-plateforme-h0n2nsxhu-soucis-projects.vercel.app/api/auth/google', {
+      await axios.post(`${BACKEND_URL}/api/auth/google`, {
         credential: credentialResponse.credential
       }).catch(() => { /* backend optionnel */ });
     } catch (e) {

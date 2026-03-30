@@ -4,8 +4,13 @@ const cors = require('cors');
 const { Pool } = require('pg');
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: '*' }));
 app.use(express.json());
+
+// Racine pour test
+app.get('/', (req, res) => {
+  res.send('🎮 Backend Mario Quiz 48h opérationnel ! Les questions sont à /api/questions');
+});
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,

@@ -1,0 +1,214 @@
+:root {
+    --bg-dark: #0a0a12;
+    --card-dark: rgba(255, 255, 255, 0.05);
+    --neon-blue: #00f2ff;
+    --neon-purple: #bc13fe;
+    --neon-yellow: #ffea00;
+    --text-main: #e0e0e0;
+    --glass: rgba(255, 255, 255, 0.03);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ─── Background Effects ─── */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, rgba(188, 19, 254, 0.1) 0%, transparent 80%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.stars {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: transparent url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/1231630/stars.png') repeat;
+    z-index: -1;
+    opacity: 0.5;
+}
+
+/* ─── Main Container ─── */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 40px 20px;
+    z-index: 10;
+    text-align: center;
+}
+
+.header {
+    margin-bottom: 60px;
+}
+
+/* Glitch Title */
+.glitch {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 700;
+    letter-spacing: 5px;
+    color: #fff;
+    text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+    position: relative;
+    display: inline-block;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    opacity: 0.8;
+    margin-top: 10px;
+    text-transform: uppercase;
+}
+
+/* ─── Game Grid ─── */
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+}
+
+/* ─── Game Cards ─── */
+.game-card {
+    position: relative;
+    height: 450px;
+    border-radius: 20px;
+    overflow: hidden;
+    background: var(--card-dark);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+    color: white;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 30px;
+    cursor: pointer;
+}
+
+.game-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: var(--neon-blue);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 242, 255, 0.2);
+}
+
+.card-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.8s ease;
+    filter: brightness(0.4) saturate(1.2);
+}
+
+.game-card:hover .card-bg {
+    transform: scale(1.1);
+    filter: brightness(0.6) saturate(1.5);
+}
+
+.mario-bg { background-image: url('https://wallpaperaccess.com/full/1805537.jpg'); }
+.dora-bg { background-image: url('https://img.freepik.com/vecteurs-premium/paysage-jungle-tropicale-nuit-pleine-lune-arbres-foret-fond-sombre-vegetaux-exotiques_104785-508.jpg'); }
+
+.card-content {
+    text-align: left;
+    position: relative;
+}
+
+.badge {
+    display: inline-block;
+    padding: 5px 12px;
+    background: var(--neon-blue);
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    box-shadow: 0 0 10px var(--neon-blue);
+}
+
+.badge.soon {
+    background: #555;
+    color: #fff;
+    box-shadow: none;
+}
+
+.game-card h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    background: linear-gradient(to right, #fff, var(--neon-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.game-card p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    opacity: 0.8;
+    margin-bottom: 20px;
+}
+
+.card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: var(--neon-blue);
+}
+
+.arrow {
+    font-style: normal;
+    transition: transform 0.3s ease;
+}
+
+.game-card:hover .arrow {
+    transform: translateX(5px);
+}
+
+.construction {
+    cursor: default;
+    opacity: 0.7;
+}
+
+.construction:hover {
+    transform: none;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+}
+
+/* ─── Footer ─── */
+.footer {
+    margin-top: 80px;
+    opacity: 0.5;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+    .container { padding: 20px; }
+    .game-grid { grid-template-columns: 1fr; }
+}
