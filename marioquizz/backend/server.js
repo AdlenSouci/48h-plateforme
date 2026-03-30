@@ -24,6 +24,18 @@ pool.query('SELECT current_database(), NOW()', (err, res) => {
   else {
     console.log('✅ Connexion réussie !');
     console.log('📂 Base :', res.rows[0].current_database);
+    
+    // Initialisation de la table users si besoin
+    pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        google_id TEXT UNIQUE,
+        name TEXT,
+        email TEXT,
+        picture TEXT,
+        total_score INTEGER DEFAULT 0
+      );
+    `).catch(e => console.error("Erreur init table users:", e.message));
   }
 });
 
