@@ -1,3 +1,5 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
+import axios from 'axios';
 import marioImg from './assets/mario.jpg';
 import villainGif from './assets/villain.gif';
 import doorImg from './assets/door.png';
