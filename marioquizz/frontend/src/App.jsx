@@ -116,7 +116,7 @@ function GameOverScreen({ score, won, onRestart, user }) {
   useEffect(() => {
     // Sauvegarde automatique du score si connecté avec Google
     if (user?.googleId) {
-      axios.post('http://localhost:3001/api/save-score', {
+      axios.post('https://48h-plateforme-h0n2nsxhu-soucis-projects.vercel.app/api/save-score', {
         googleId: user.googleId,
         score,
       }).catch(() => { /* silencieux si backend indisponible */ });
@@ -489,7 +489,7 @@ function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/api/questions')
+    axios.get('https://48h-plateforme-h0n2nsxhu-soucis-projects.vercel.app/api/questions')
       .then(res => { setQuestions(res.data); setLoading(false); })
       .catch(() => {
         setQuestions([
@@ -517,7 +517,7 @@ function App() {
       });
       
       // Envoyer au backend
-      await axios.post('http://localhost:3001/api/auth/google', {
+      await axios.post('https://48h-plateforme-h0n2nsxhu-soucis-projects.vercel.app/api/auth/google', {
         credential: credentialResponse.credential
       }).catch(() => { /* backend optionnel */ });
     } catch (e) {
