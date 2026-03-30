@@ -293,8 +293,8 @@ function GameScreen({ questions, playerName }) {
     });
   };
 
-  if (gameState === 'WIN') return <GameOverScreen score={score} won={true} onRestart={() => window.location.reload()} user={user} />;
-  if (gameState === 'LOSE') return <GameOverScreen score={score} won={false} onRestart={() => window.location.reload()} user={user} />;
+  if (gameState === 'WIN') return <GameOverScreen score={score} won={true} onRestart={() => window.location.reload()} playerName={playerName} />;
+  if (gameState === 'LOSE') return <GameOverScreen score={score} won={false} onRestart={() => window.location.reload()} playerName={playerName} />;
 
   const options = [q.option_a, q.option_b, q.option_c, q.option_d].filter(Boolean);
 

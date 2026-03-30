@@ -5,6 +5,7 @@
 CREATE TABLE IF NOT EXISTS users (
   id           SERIAL PRIMARY KEY,
   google_id    TEXT UNIQUE NOT NULL,
+  pseudo       TEXT,
   name         TEXT,
   email        TEXT,
   picture      TEXT,

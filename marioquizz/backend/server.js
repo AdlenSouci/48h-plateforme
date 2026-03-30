@@ -30,6 +30,7 @@ pool.query('SELECT current_database(), NOW()', (err, res) => {
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         google_id TEXT UNIQUE,
+        pseudo TEXT,
         name TEXT,
         email TEXT,
         picture TEXT,
@@ -76,9 +77,9 @@ app.post('/api/save-score', async (req, res) => {
   if (!playerName) return res.status(400).json({ error: "Nom du joueur manquant" });
   
   try {
-    // On insère simplement une nouvelle ligne pour le classement
+    // On insère simplement une nouvelle ligne pour le classement avec le pseudo
     await pool.query(
-      `INSERT INTO users (name, total_score) VALUES ($1, $2)`,
+      `INSERT INTO users (pseudo, total_score) VALUES ($1, $2)`,
       [playerName, score]
     );
     res.json({ message: "Score sauvegardé" });
@@ -92,7 +93,7 @@ app.post('/api/save-score', async (req, res) => {
 app.get('/api/leaderboard', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT name, total_score FROM users ORDER BY total_score DESC LIMIT 10'
+      'SELECT pseudo, total_score FROM users ORDER BY total_score DESC LIMIT 10'
     );
     res.json(result.rows);
   } catch {
