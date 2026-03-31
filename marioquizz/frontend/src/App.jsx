@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import marioImg from './assets/mario.png';
-import villainGif from './assets/villain.gif';
+import villainGif from './assets/villain_boss.png';
 import doorImg from './assets/door.png';
 import './App.css';
 
@@ -70,7 +70,7 @@ function StartScreen({ onStart, playerName, setPlayerName }) {
           </div>
           <div className="start-vs">VS</div>
           <div className="char-wrap">
-            <img src={villainGif} alt="Goomba Boss" className="start-villain" />
+            <img src={villainGif} alt="Goomba Boss" className="start-villain villain-run" />
             <span className="char-label boss-char">BOSS</span>
           </div>
         </div>
@@ -342,7 +342,7 @@ function GameScreen({ questions, playerName }) {
           style={{ left: `${villainPos}%`, zIndex: isDying ? 10 : 3 }}
         >
           <div className="villain-label">⚡ BOSS</div>
-          <img src={villainGif} alt="Boss" className="villain-sprite" />
+          <img src={villainGif} alt="Boss" className="villain-sprite villain-run" />
         </div>
 
         {/* Mario */}

@@ -579,7 +579,17 @@ body::before {
   width: 56px;
   image-rendering: pixelated;
   filter: drop-shadow(0 0 10px rgba(255,71,87,0.7));
-  /* GIF already animated — no extra animation needed */
+  background: transparent;
+}
+
+.villain-run {
+  animation: villain-run-anim 0.6s steps(2) infinite;
+}
+
+@keyframes villain-run-anim {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
 }
 
 .villain-shake {
