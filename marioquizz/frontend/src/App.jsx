@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
-import marioImg from './assets/mario.jpg';
+import marioImg from './assets/mario.png';
 import villainGif from './assets/villain.gif';
 import doorImg from './assets/door.png';
 import './App.css';
@@ -52,10 +52,10 @@ function StartScreen({ onStart, playerName, setPlayerName }) {
         <div className="auth-section">
           <div className="pseudo-input-wrap">
             <label htmlFor="pseudo">TON PSEUDO POUR LE CLASSEMENT :</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               id="pseudo"
-              placeholder="Ex: MarioMaster99" 
+              placeholder="Ex: MarioMaster99"
               value={playerName}
               onChange={(e) => setPlayerName(e.target.value)}
               className="pseudo-input"
@@ -479,9 +479,9 @@ function App() {
       .catch(() => {
         // Fallback si le serveur ne répond pas encore (vérifie DATABASE_URL sur Vercel)
         setQuestions([
-          { id:1, content:'⚠️ Erreur de connexion au serveur !', option_a:'Vérifie DATABASE_URL sur Vercel', option_b:'Redéploie le backend', option_c:'Check tes logs Vercel', option_d:'Relance le push git', solution:'Check tes logs Vercel', hint:'Le site n\'arrive pas à parler au serveur.', explanation:'Si tu vois ça, c\'est que l\'API n\'a pas répondu.' },
-          { id:2, content:'Quelle est la capitale de la France ?', option_a:'Berlin', option_b:'Madrid', option_c:'Paris', option_d:'Rome', solution:'Paris', hint:'C\'est la ville de la Tour Eiffel.', explanation:'Paris est la capitale et plus grande ville de France.' },
-          { id:3, content:'Combien font 2 + 2 × 2 ?', option_a:'8', option_b:'6', option_c:'4', option_d:'16', solution:'6', hint:'Priorité : multiplication avant addition.', explanation:'2 + (2×2) = 2 + 4 = 6' },
+          { id: 1, content: '⚠️ Erreur de connexion au serveur !', option_a: 'Vérifie DATABASE_URL sur Vercel', option_b: 'Redéploie le backend', option_c: 'Check tes logs Vercel', option_d: 'Relance le push git', solution: 'Check tes logs Vercel', hint: 'Le site n\'arrive pas à parler au serveur.', explanation: 'Si tu vois ça, c\'est que l\'API n\'a pas répondu.' },
+          { id: 2, content: 'Quelle est la capitale de la France ?', option_a: 'Berlin', option_b: 'Madrid', option_c: 'Paris', option_d: 'Rome', solution: 'Paris', hint: 'C\'est la ville de la Tour Eiffel.', explanation: 'Paris est la capitale et plus grande ville de France.' },
+          { id: 3, content: 'Combien font 2 + 2 × 2 ?', option_a: '8', option_b: '6', option_c: '4', option_d: '16', solution: '6', hint: 'Priorité : multiplication avant addition.', explanation: '2 + (2×2) = 2 + 4 = 6' },
         ]);
         setLoading(false);
       });
